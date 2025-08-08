@@ -18,11 +18,15 @@ export class UserService {
     
     let query = supabase
       .from('users')
-      .select('*', { count: 'exact' });
+      .select(`
+        *,
+        resellers(*),
+        invites(*)
+      `, { count: 'exact' });
     
     // Apply filters
     if (search) {
-      query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%`);
+      query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%`);
     }
     
     if (reseller_id) {
@@ -43,7 +47,24 @@ export class UserService {
     
     const meta = calculatePagination(page, limit, count || 0);
     
-    return { users: users || [], meta };
+    // Transform the data to match frontend expectations
+    const transformedUsers = (users || []).map(user => ({
+      id: user.id,
+      email: user.email,
+      name: user.full_name || user.email, // Use full_name or fallback to email
+      phone: user.phone,
+      reseller_id: user.reseller_id,
+      created_at: user.created_at,
+      reseller: user.resellers ? {
+        id: user.resellers.id,
+        type: user.resellers.commission_rate > 10 ? 'PREMIUM' : 'FREE', // Derive type from commission_rate
+        referral_code: user.resellers.referral_code || '',
+        user_id: user.resellers.user_id || user.id
+      } : null,
+      invites: user.invites || []
+    }));
+    
+    return { users: transformedUsers, meta };
   }
   
   /**
@@ -136,6 +157,102 @@ export class UserService {
     } catch (error) {
       logger.error('Failed to fetch user stats:', error);
       throw new Error('Failed to fetch user statistics');
+    }
+  }
+
+  /**
+   * Delete user by ID
+   */
+  static async deleteUser(id: string): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('users')
+        .delete()
+        .eq('id', id);
+      
+      if (error) {
+        logger.error('Failed to delete user:', error);
+        return false;
+      }
+      
+      return true;
+    } catch (error) {
+      logger.error('Failed to delete user:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Create a new user
+   */
+  static async createUser(userData: {
+    email: string;
+    full_name: string;
+    phone?: string;
+    password_hash?: string;
+  }): Promise<any> {
+    try {
+      const { data: user, error } = await supabase
+        .from('users')
+        .insert([userData])
+        .select()
+        .single();
+      
+      if (error || !user) {
+        logger.error('Failed to create user:', error);
+        throw new Error('Failed to create user');
+      }
+      
+      return {
+        id: user.id,
+        email: user.email,
+        name: user.full_name || user.email,
+        phone: user.phone,
+        reseller_id: user.reseller_id,
+        created_at: user.created_at,
+        reseller: null,
+        invites: []
+      };
+    } catch (error) {
+      logger.error('Failed to create user:', error);
+      throw new Error('Failed to create user');
+    }
+  }
+
+  /**
+   * Update user by ID
+   */
+  static async updateUser(id: string, userData: {
+    email?: string;
+    full_name?: string;
+    phone?: string;
+  }): Promise<any> {
+    try {
+      const { data: user, error } = await supabase
+        .from('users')
+        .update(userData)
+        .eq('id', id)
+        .select()
+        .single();
+      
+      if (error || !user) {
+        logger.error('Failed to update user:', error);
+        return null;
+      }
+      
+      return {
+        id: user.id,
+        email: user.email,
+        name: user.full_name || user.email,
+        phone: user.phone,
+        reseller_id: user.reseller_id,
+        created_at: user.created_at,
+        reseller: null,
+        invites: []
+      };
+    } catch (error) {
+      logger.error('Failed to update user:', error);
+      throw new Error('Failed to update user');
     }
   }
 }

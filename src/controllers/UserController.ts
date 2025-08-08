@@ -63,4 +63,66 @@ export class UserController {
       res.status(500).json(errorResponse('Failed to fetch user statistics'));
     }
   }
+
+  /**
+   * Create a new user
+   */
+  static async createUser(req: Request, res: Response): Promise<void> {
+    try {
+      const userData = req.body;
+      
+      const user = await UserService.createUser(userData);
+      
+      res.status(201).json(successResponse(user));
+      
+    } catch (error) {
+      logger.error('Create user error:', error);
+      res.status(500).json(errorResponse('Failed to create user'));
+    }
+  }
+
+  /**
+   * Update user by ID
+   */
+  static async updateUser(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const userData = req.body;
+      
+      const user = await UserService.updateUser(id, userData);
+      
+      if (!user) {
+        res.status(404).json(errorResponse('User not found'));
+        return;
+      }
+      
+      res.json(successResponse(user));
+      
+    } catch (error) {
+      logger.error('Update user error:', error);
+      res.status(500).json(errorResponse('Failed to update user'));
+    }
+  }
+
+  /**
+   * Delete user by ID
+   */
+  static async deleteUser(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      
+      const success = await UserService.deleteUser(id);
+      
+      if (!success) {
+        res.status(404).json(errorResponse('User not found'));
+        return;
+      }
+      
+      res.json(successResponse({ message: 'User deleted successfully' }));
+      
+    } catch (error) {
+      logger.error('Delete user error:', error);
+      res.status(500).json(errorResponse('Failed to delete user'));
+    }
+  }
 }

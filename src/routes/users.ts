@@ -25,9 +25,27 @@ router.get('/', adminAuth, validateQuery(userQuerySchema), UserController.getUse
 router.get('/stats', adminAuth, UserController.getUserStats);
 
 /**
+ * POST /admin/users
+ * Create a new user
+ */
+router.post('/', adminAuth, UserController.createUser);
+
+/**
  * GET /admin/users/:id
  * Get user by ID
  */
 router.get('/:id', adminAuth, UserController.getUserById);
+
+/**
+ * PUT /admin/users/:id
+ * Update user by ID
+ */
+router.put('/:id', adminAuth, UserController.updateUser);
+
+/**
+ * DELETE /admin/users/:id
+ * Delete user by ID
+ */
+router.delete('/:id', adminAuth, UserController.deleteUser);
 
 export default router;
