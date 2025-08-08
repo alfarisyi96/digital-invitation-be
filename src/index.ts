@@ -40,7 +40,30 @@ class App {
         // Allow requests with no origin (mobile apps, Postman, etc.)
         if (!origin) return callback(null, true);
         
-        if (config.cors.allowedOrigins.includes(origin)) {
+        // Enhanced origins list for both development and production
+        const allowedOrigins = [
+          ...config.cors.allowedOrigins,
+          // Vercel production URLs
+          'https://invitation-landing.vercel.app',
+          'https://invitation-user-dashboard.vercel.app', 
+          'https://invitation-admin-dashboard.vercel.app',
+          // VPS production URLs (replace with your domain)
+          'https://your-domain.com',
+          // Allow any localhost for development
+          /^https?:\/\/localhost:\d+$/
+        ];
+        
+        // Check if origin matches any allowed origin
+        const isAllowed = allowedOrigins.some(allowed => {
+          if (typeof allowed === 'string') {
+            return allowed === origin;
+          } else if (allowed instanceof RegExp) {
+            return allowed.test(origin);
+          }
+          return false;
+        });
+        
+        if (isAllowed) {
           return callback(null, true);
         }
         
@@ -48,7 +71,10 @@ class App {
         return callback(new Error(msg), false);
       },
       credentials: true,
-      optionsSuccessStatus: 200
+      optionsSuccessStatus: 200,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+      exposedHeaders: ['Set-Cookie']
     }));
 
     // Rate limiting
@@ -113,27 +139,40 @@ class App {
         throw new Error('Failed to connect to Supabase');
       }
 
-      // Start server
-      this.app.listen(config.port, () => {
-        logger.info(`🚀 Admin Backend Server started`, {
-          port: config.port,
-          environment: config.nodeEnv,
-          url: `http://localhost:${config.port}`
+      // Only start server if not in Vercel environment
+      if (process.env.VERCEL !== '1') {
+        // Start server
+        this.app.listen(config.port, () => {
+          logger.info(`🚀 Admin Backend Server started`, {
+            port: config.port,
+            environment: config.nodeEnv,
+            url: `http://localhost:${config.port}`,
+            deployment: 'traditional'
+          });
+          
+          logger.info('📋 Available routes:');
+          logger.info('  GET  /                    - API info');
+          logger.info('  GET  /admin/health        - Health check');
+          logger.info('  POST /admin/auth/login    - Admin login');
+          logger.info('  GET  /admin/users         - List users');
+          logger.info('  GET  /admin/resellers     - List resellers');
+          logger.info('  GET  /admin/invites       - List invites');
         });
-        
-        logger.info('📋 Available routes:');
-        logger.info('  GET  /                    - API info');
-        logger.info('  GET  /admin/health        - Health check');
-        logger.info('  POST /admin/auth/login    - Admin login');
-        logger.info('  GET  /admin/users         - List users');
-        logger.info('  GET  /admin/resellers     - List resellers');
-        logger.info('  GET  /admin/invites       - List invites');
-      });
+      } else {
+        logger.info('🔶 Vercel environment detected - serverless mode');
+      }
 
     } catch (error) {
       logger.error('Failed to start server:', error);
-      process.exit(1);
+      if (process.env.VERCEL !== '1') {
+        process.exit(1);
+      }
     }
+  }
+
+  // Export the Express app for Vercel
+  public getExpressApp(): express.Application {
+    return this.app;
   }
 }
 
@@ -167,4 +206,6 @@ if (require.main === module) {
   app.start();
 }
 
+// Export both the app instance and the Express app for different deployment methods
 export default app;
+export { app as appInstance };
