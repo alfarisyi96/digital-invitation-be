@@ -1,9 +1,14 @@
 export interface AdminUser {
   id: string;
-  name: string;
+  username: string;
   email: string;
   password_hash: string;
+  full_name: string;
+  role: string;
+  is_active: boolean;
+  last_login: Date | null;
   created_at: Date;
+  updated_at: Date;
 }
 
 export interface Reseller {

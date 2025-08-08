@@ -15,12 +15,16 @@ export class AuthController {
       const result = await AuthService.login(loginData);
       
       // Set HTTP-only cookie
-      res.cookie('admin_token', result.token, {
+      const cookieOptions = {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: (process.env.NODE_ENV === 'production' ? 'strict' : 'lax') as 'strict' | 'lax',
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      });
+        domain: process.env.NODE_ENV === 'production' ? undefined : 'localhost'
+      };
+      
+      logger.debug('Setting cookie with options:', cookieOptions);
+      res.cookie('admin_token', result.token, cookieOptions);
       
       res.json(successResponse({
         user: result.admin,

@@ -102,11 +102,12 @@ export class AuthService {
   static async getAdminById(id: string): Promise<Omit<AdminUser, 'password_hash'> | null> {
     const { data: admin, error } = await supabase
       .from('admin_users')
-      .select('id, name, email, created_at')
+      .select('id, username, email, full_name, role, is_active, last_login, created_at, updated_at')
       .eq('id', id)
       .single();
     
     if (error || !admin) {
+      logger.debug('Failed to get admin by ID:', { id, error });
       return null;
     }
     

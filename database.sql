@@ -158,7 +158,7 @@ INSERT INTO admin_users (username, email, password_hash, full_name, role)
 VALUES (
     'admin',
     'admin@invitation.com',
-    '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj3MhORLJVqm',
+    '$2b$12$TwUR.t.Y1k4Ldh6ZFCtPV.9bdtuf6UM2tZvTKnunnQSf7woLsxUdW',
     'System Administrator',
     'super_admin'
 ) ON CONFLICT (username) DO NOTHING;
