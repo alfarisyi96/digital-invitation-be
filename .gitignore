@@ -1,10 +1,259 @@
+# Dependencies
 node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
 dist/
+build/
+lib/
+out/
+
+# Environment variables
 .env
 .env.local
+.env.development
+.env.test
 .env.production
+.env.staging
+
+# Logs
 *.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
 coverage/
 .nyc_output/
+
+# TypeScript
+*.tsbuildinfo
+.tscache/
+
+# Node.js REPL history
+.node_repl_history
+
+# npm
+npm-debug.log*
+.npm
+
+# Yarn
+yarn-debug.log*
+yarn-error.log*
+.yarn-integrity
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+.env.test
+.env.production
+.env.local
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Storybook build outputs
+.out
+.storybook-out
+
+# Temporary folders
+tmp/
+temp/
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# Supabase
+.branches
+.temp
+supabase/.branches
+supabase/.temp
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+
+# Local development
+*.local
+
+# SSL certificates
+*.pem
+*.key
+*.crt
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+
+# Backup files
+*.bak
+*.backup
+
+# Archive files
+*.zip
+*.tar.gz
+*.rar
+
+# Test artifacts
+test-results/
+junit.xml
+
+# Performance monitoring
+.clinic/
+
+# ESLint cache
+.eslintcache
+
+# Prettier cache
+.prettiercache
+
+# PM2
+.pm2
+
+# Serverless
+.serverless/
+
+# AWS
+.aws-sam/
+
+# Local History for Visual Studio Code
+.history/
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Mac bundle stuff
+*.dmg
+*.app
+
+# content below this line is custom to this project
+# Add any project-specific ignores below this line
+
+# API specific
+uploads/
+static/
+public/uploads/
+
+# Session stores
+sessions/
+redis-data/
+
+# Queue files
+queue/
+jobs/
+
+# Cache
+.cache/
+redis.conf
+
+# API keys and secrets (additional safety)
+**/secrets/
+keys/
+certificates/
+
+# Development databases
+*.sqlite
+*.sqlite3
+*.db
+development.db
+test.db
+
+# Email templates (if generated)
+compiled-templates/
+
+# API documentation (if auto-generated)
+api-docs/
+swagger-output.json
+
+# Load testing
+artillery-report.json
+k6-report.html
+
+# Monitoring and profiling
+.clinic/
+0x/
+clinic/
+
+# Process files
+.pm2/
+ecosystem.config.js.local
+
+# Local scripts
+scripts/local/
+local-setup.sh
+
+# Backup and migration files
+backups/
+migrations-backup/
+schema-backup.sql
+
+# Cookies and sessions (if files)
+cookies.txt
+sessions.txt

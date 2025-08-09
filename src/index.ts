@@ -9,6 +9,7 @@ import { logger } from './utils/logger';
 import { testSupabaseConnection } from './utils/supabase';
 import { errorHandler, notFoundHandler, requestLogger } from './middleware/error';
 import adminRoutes from './routes';
+import userRoutes from './routes/user-index';
 
 class App {
   public app: express.Application;
@@ -105,15 +106,19 @@ class App {
   private initializeRoutes(): void {
     // Mount admin routes
     this.app.use('/admin', adminRoutes);
+    
+    // Mount user routes (for user dashboard)
+    this.app.use('/api', userRoutes);
 
     // Root route
     this.app.get('/', (req, res) => {
       res.json({
         success: true,
         data: {
-          message: 'Invitation Admin Backend API',
+          message: 'Invitation Platform Backend API',
           version: '1.0.0',
-          documentation: '/admin/health',
+          admin_docs: '/admin/health',
+          user_docs: '/api/health',
           timestamp: new Date().toISOString()
         },
         error: null
@@ -151,12 +156,19 @@ class App {
           });
           
           logger.info('📋 Available routes:');
-          logger.info('  GET  /                    - API info');
-          logger.info('  GET  /admin/health        - Health check');
-          logger.info('  POST /admin/auth/login    - Admin login');
-          logger.info('  GET  /admin/users         - List users');
-          logger.info('  GET  /admin/resellers     - List resellers');
-          logger.info('  GET  /admin/invites       - List invites');
+          logger.info('  GET  /                         - API info');
+          logger.info('  🔒 ADMIN ROUTES (/admin):');
+          logger.info('    GET  /admin/health           - Health check');
+          logger.info('    POST /admin/auth/login       - Admin login');
+          logger.info('    GET  /admin/users            - List users');
+          logger.info('    GET  /admin/resellers        - List resellers');
+          logger.info('    GET  /admin/invites          - List invites');
+          logger.info('  👤 USER ROUTES (/api):');
+          logger.info('    GET  /api/health             - Health check');
+          logger.info('    POST /api/auth/login/google  - User Google login');
+          logger.info('    GET  /api/auth/profile       - User profile');
+          logger.info('    POST /api/invitations        - Create invitation');
+          logger.info('    GET  /api/templates          - Browse templates');
         });
       } else {
         logger.info('🔶 Vercel environment detected - serverless mode');
